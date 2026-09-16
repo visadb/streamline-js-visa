@@ -65,7 +65,7 @@ jobs:
           set -euo pipefail
           base=$(jq -r '.version' dist/skin-manifest.json)
           dev="${base}-dev.$(echo "${{ github.sha }}" | cut -c1-7).${{ github.run_number }}"
-          jq --arg v "$dev" '.id = "streamline.js-dist" | .name = "\(.name) Dev" | .version = $v' \
+          jq --arg v "$dev" '.id = "streamline.js-visa-dist" | .name = "\(.name) Dev" | .version = $v' \
             dist/skin-manifest.json > dist/skin-manifest.json.tmp
           mv dist/skin-manifest.json.tmp dist/skin-manifest.json
           # APP_VERSION is what the RUNNING bundle reports; the manifest is what
@@ -74,11 +74,11 @@ jobs:
           # look like a pending update.
           sed -i "s/^export const APP_VERSION = '.*';/export const APP_VERSION = '${dev}';/" dist/src/version.js
           # SKIN_ID is how the running bundle finds ITSELF in GET /webui/skins.
-          # Left at 'streamline.js' the dist build reads the bundled released
+          # Left at the released id ('streamline.js-visa') the dist build reads the released
           # skin's version instead, and a prerelease stamp always sorts below
           # that release, so every dist load showed "new version available"
           # (streamline-js #196 follow-up).
-          sed -i "s/^export const SKIN_ID = '.*';/export const SKIN_ID = 'streamline.js-dist';/" dist/src/version.js
+          sed -i "s/^export const SKIN_ID = '.*';/export const SKIN_ID = 'streamline.js-visa-dist';/" dist/src/version.js
           grep -n "APP_VERSION\|SKIN_ID" dist/src/version.js
           cat dist/skin-manifest.json
 
@@ -86,7 +86,7 @@ jobs:
         run: |
           set -euo pipefail
           test -f dist/skin-manifest.json
-          jq -e '.id == "streamline.js" or .id == "streamline.js-dist"' dist/skin-manifest.json > /dev/null
+          jq -e '.id == "streamline.js-visa" or .id == "streamline.js-visa-dist"' dist/skin-manifest.json > /dev/null
           jq -e '.version' dist/skin-manifest.json > /dev/null
 
 
@@ -115,11 +115,11 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
           cd dist
-          zip -r ../streamline.js-${{ github.ref_name }}.zip .
+          zip -r ../streamline.js-visa-${{ github.ref_name }}.zip .
 
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v1
         with:
-          files: streamline.js-${{ github.ref_name }}.zip
+          files: streamline.js-visa-${{ github.ref_name }}.zip
           generate_release_notes: true
