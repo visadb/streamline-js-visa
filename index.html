@@ -231,18 +231,18 @@
                 <div class="flex flex-col flex-1 min-w-0">
                     <div class="relative h-[150px]">
                         <div class="absolute top-[30px] left-[40px] right-[44px]">
-                            <!-- Reserve #machine-status' 556px box (plus a 12px gutter) so the name and
-                                 its buttons can never run under it. That box is anchored right-[44px] in
-                                 the same band, and the band loses 172px when #ghc-controls is shown, so
-                                 the budget has to be measured from the right edge, not assumed. -->
-                            <div class="flex items-center gap-[22px] max-w-[calc(100%_-_568px)]">
-                                <!-- max-w (not w): the h1 shrinks to the name's actual width so the
-                                     buttons sit right next to short names, and only clips to 556px +
-                                     ellipsis for a name that would otherwise run long. min-w-0 + truncate
-                                     let it give way first when the GHC column narrows the band.
-                                     textContent is unaffected, so the title-matching lookups in
-                                     profileManager/profile_selector still see the full name. -->
-                                <h1 id="profile-name" class="max-w-[556px] min-w-0 shrink truncate py-[6px] -my-[6px] justify-start text-[var(--mimoja-blue-v2)] text-nowrap text-[30px] font-bold font-['Inter'] leading-8 tracking-wide no-select" aria-live="polite">
+                            <!-- One flex row: name, its two buttons, then #machine-status pushed hard
+                                 right (ml-auto). The status sizes to its text and never shrinks, so the
+                                 name gets every pixel the status does not actually use instead of a
+                                 fixed budget that left most of a 556px status box empty. -->
+                            <div class="flex items-center gap-[22px]">
+                                <!-- The h1 is the only shrinkable item: it sits at the name's natural
+                                     width so the buttons stay next to short names, and min-w-0 +
+                                     truncate make it give way (with an ellipsis) before anything else
+                                     when the name plus status outgrow the band, e.g. when the GHC column
+                                     narrows it. textContent is unaffected, so the title-matching lookups
+                                     in profileManager/profile_selector still see the full name. -->
+                                <h1 id="profile-name" class="min-w-0 shrink truncate py-[6px] -my-[6px] justify-start text-[var(--mimoja-blue-v2)] text-nowrap text-[30px] font-bold font-['Inter'] leading-8 tracking-wide no-select" aria-live="polite">
                                     Current Profile
                                 </h1>
                                 <!-- Explicit header affordances for the two actions that are otherwise
@@ -254,6 +254,9 @@
                                 <button id="profile-edit-btn" class="shrink-0 header-icon-btn" aria-label="Edit Profile">
                                     <img src="src/ui/icons/icon_profile_edit.svg" alt="" class="w-[25px] h-[25px]" aria-hidden="true">
                                 </button>
+                                <div id="machine-status" class="ml-auto shrink-0 text-right text-nowrap text-[30px] font-semibold font-['Inter'] leading-8 tracking-wide" data-i18n-key="Connecting" aria-live="assertive">
+                                    Connecting
+                                </div>
                             </div>
                             <!-- min-w-full so Weight's ml-auto has room to push right, while the row
                                  still grows past it for a long-language line — i18n.fitTelemetry
@@ -282,9 +285,6 @@
                                     <p><span id = 'weight-text' class="no-select text-[var(--data-card-title-text-color)] text-[22.5px] font-semibold font-['Inter'] leading-6" data-i18n-key="Weight"></span>&nbsp;&nbsp;<span id="data-weight" class="text-[var(--mimoja-blue-v2)] text-[22.5px] font-extrabold font-['NotoSansMono'] leading-6 no-select"> </span></p>
                                 </div>
                             </div>
-                        </div>
-                        <div id="machine-status" class="w-[556px] absolute top-[22px] py-[10px] right-[44px] text-right justify-center text-nowrap text-[30px] font-semibold font-['Inter'] leading-8 tracking-wide" data-i18n-key="Connecting" aria-live="assertive">
-                            Connecting
                         </div>
                     </div>
 

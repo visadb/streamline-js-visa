@@ -3780,11 +3780,9 @@ export function showGhcControls() {
     // GHC column so their borders form one continuous line (was 878 -> 7px gap).
     if (panel) panel.style.width = '885px';
 
-    const status = document.getElementById('machine-status');
-    if (status) {
-        status.style.right = '100px'; // 172px GHC + 20px gap
-        status.style.width = 'auto';  // size to content; right edge stays anchored, box grows leftward
-    }
+    // #machine-status needs no adjustment: it is the ml-auto tail of the header's
+    // flex row (index.html), so it follows the band's right edge as the GHC column
+    // narrows the band.
 
     // Shrink Pressure column so it doesn't overlap GHC
     document.querySelectorAll('.shot-data-cols').forEach(grid => {
@@ -3807,12 +3805,6 @@ export function hideGhcControls() {
 
     const panel = document.getElementById('shot-data-panel');
     if (panel) panel.style.width = '';
-
-    const status = document.getElementById('machine-status');
-    if (status) {
-        status.style.right = '';
-        status.style.width = '';
-    }
 
     // Restore Pressure column width
     document.querySelectorAll('.shot-data-cols').forEach(grid => {
