@@ -8,6 +8,12 @@ test('stepValue drops float noise', () => {
     assert.equal(stepValue(0.1, 0.2, 1), 0.3);
 });
 
+test('stepValue keeps a step finer than hundredths exact', () => {
+    assert.equal(stepValue(1.4, 0.025, 1), 1.425);
+    assert.equal(stepValue(1.425, 0.025, -1), 1.4);
+    assert.equal(stepValue(0.01, 0.025, -1, 0), 0);
+});
+
 test('formatRatio keeps the second decimal only when it matters', () => {
     assert.equal(formatRatio(41 / 16.3), '2.52');
     assert.equal(formatRatio(2), '2.0');

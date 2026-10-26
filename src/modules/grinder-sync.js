@@ -7,7 +7,7 @@
 //   follow: the grinder's reading becomes the tile ("device wins").
 //   send:   a tile edit is written to the grinder ("recipe wins").
 
-const SAME = 0.005; // the tile keeps hundredths
+const SAME = 0.005; // grinderSettingString sends a grinder at most hundredths
 
 export const sameGrind = (a, b) => Number.isFinite(a) && Number.isFinite(b) && Math.abs(a - b) < SAME;
 

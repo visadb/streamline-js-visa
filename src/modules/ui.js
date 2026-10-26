@@ -15,7 +15,7 @@ import { shouldUseNumpad } from './numpad-policy.js';
 import { openContextMenu } from './context-menu.js';
 import { initCalibratedSteam } from './calibrated-steam-ui.js';
 import { logger } from './logger.js';
-import { grindDecimals } from './grinder-sync.js';
+import { GRIND_STEP, formatGrind } from './grind-policy.js';
 import { shouldWriteStatus } from './machine-status-render.js';
 import { SETTINGS_RESTORED_EVENT } from './settingsSync.js';
 import * as chart from './chart.js';
@@ -212,7 +212,6 @@ let lastTileInteractionAt = 0;
 function markTileInteraction() { lastTileInteractionAt = Date.now(); }
 export function msSinceTileInteraction() { return Date.now() - lastTileInteractionAt; }
 
-let grindStep = 0.1;
 // The -/+ step a connected grinder declares for its grind setting; null when none is connected.
 let grinderDeclaredStep = null;
 export function setGrinderGrindStep(step) { grinderDeclaredStep = Number.isFinite(step) && step > 0 ? step : null; }
@@ -504,14 +503,14 @@ export async function applyPluginStepAsync(field, by) {
 export function updateGrindValue(newValue) {
     const workflowUpdate = {
         context: {
-            grinderSetting: parseFloat(newValue).toFixed(2)
+            grinderSetting: formatGrind(newValue)
         }
     };
     // Override saved only once Decaid accepted the value: a refused write must
     // not become the profile's remembered grind.
     const done = updateWorkflow(workflowUpdate, 'tiles.grind').then(() => {
         logger.debug('Grind value updated successfully:', newValue);
-        window.app?.saveGrindToActiveProfile?.(parseFloat(newValue).toFixed(2));
+        window.app?.saveGrindToActiveProfile?.(formatGrind(newValue));
     }).catch(error => {
         tileWriteFailed('grind value', error);
     });
@@ -2878,8 +2877,7 @@ export function initUI(callbacks) {
                 alert('Grind setting must be at least 0.');
                 value = 0;
             }
-            grindStep = Number.isInteger(value) ? 1 : 0.1;
-            grindValueEl.textContent = Number.isInteger(value) ? String(value) : value.toFixed(1);
+            grindValueEl.textContent = formatGrind(value);
             updateGrindValue(value);
         });
     }
@@ -3003,13 +3001,14 @@ export function initUI(callbacks) {
         syncDrinkOutPresets(fmt);
     });
     // A plugin `stepsize` on grind wins, then the step the connected grinder declares, then
-    // the workflow grinder's settingSmallStep, then the built-in whole-number/0.1 rule.
-    const grindStepNow = () => drawnStepSizes.grinderSetting ? activeStepSize('grinderSetting') : (grinderDeclaredStep ?? workflowGrinderStep ?? grindStep);
+    // the workflow grinder's settingSmallStep, then the legacy 0.025 step. The value is shown
+    // at three decimals whichever step is in use.
+    const grindStepNow = () => drawnStepSizes.grinderSetting ? activeStepSize('grinderSetting') : (grinderDeclaredStep ?? workflowGrinderStep ?? GRIND_STEP);
     // The grinder the workflow names declares its own floor and ceiling (DYE2's grinders page
     // writes them); without one the tile keeps its 0 floor and no ceiling.
     setupValueAdjuster('grind-minus', 'grind-plus', 'grind-value', grindStepNow,
         () => workflowGrinderRange.min,
-        (val) => Number.isInteger(grindStepNow()) ? String(Math.round(val)) : val.toFixed(grindDecimals(grindStepNow())),
+        formatGrind,
         updateGrindValue, undefined, () => workflowGrinderRange.max);
     setupValueAdjuster('flush-minus', 'flush-plus', 'flush-value', 1, 0, (val) => `${val}s`, (val) => {
         updateFlushValue(val);
@@ -3759,8 +3758,7 @@ export function updateGrindDisplay(grinderData) {
     // Prefer grinderSetting over setting (context takes precedence)
     const grindValue = grinderData?.grinderSetting ?? grinderData?.setting;
     if (grindValueEl && grindValue !== undefined) {
-        const parsed = parseFloat(grindValue);
-        grindValueEl.textContent = Number.isInteger(parsed) ? String(parsed) : parsed.toFixed(1);
+        grindValueEl.textContent = formatGrind(grindValue);
     }
 }
 
