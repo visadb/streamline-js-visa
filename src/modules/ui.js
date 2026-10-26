@@ -4053,16 +4053,9 @@ export function showGhcControls() {
     // GHC column so their borders form one continuous line (was 878 -> 7px gap).
     if (panel) panel.style.width = '885px';
 
-    const status = document.getElementById('machine-status');
-    if (status) {
-        // No right override here: the status line's own positioning container
-        // already ends at the GHC column's left edge when these controls are
-        // shown, so the old `right: 100px` counted the GHC width a second time
-        // and left the line short of the telemetry row beneath it -- the Retry
-        // offered in needsWater sat inboard of the scale's own Retry (#178).
-        // right-[44px] from the markup now anchors both layouts to one edge.
-        status.style.width = 'auto';  // size to content; right edge stays anchored, box grows leftward
-    }
+    // #machine-status needs no adjustment: it is the ml-auto tail of the header's
+    // flex row (index.html), so it follows the band's right edge as the GHC column
+    // narrows the band.
 
     // Shrink Pressure column so it doesn't overlap GHC
     document.querySelectorAll('.shot-data-cols').forEach(grid => {
@@ -4085,11 +4078,6 @@ export function hideGhcControls() {
 
     const panel = document.getElementById('shot-data-panel');
     if (panel) panel.style.width = '';
-
-    const status = document.getElementById('machine-status');
-    if (status) {
-        status.style.width = '';
-    }
 
     // Restore Pressure column width
     document.querySelectorAll('.shot-data-cols').forEach(grid => {
