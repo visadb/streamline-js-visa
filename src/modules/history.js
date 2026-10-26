@@ -14,6 +14,7 @@ import { ASSISTED_DIALIN_PLUGIN_ID, findAssistedDialInPlugin, buildAssistedDialI
 import { openBeanScaleCaptureModal } from './bean-scale-modal.js';
 import { openBeanSelectionModal } from './bean-selection-modal.js';
 import { VISUALIZER_PLUGIN_ID, visualizerAccountConfigured } from './visualizer-account.js';
+import { formatGrind } from './grind-policy.js';
 
 const PAGE_SIZE = 20;
 let shots = [];
@@ -195,7 +196,7 @@ async function displayShot(index) {
         const grindSetting = shot.workflow?.context?.grinderSetting ?? shot.workflow?.grinderData?.setting;
         if (typeof grindSetting !== 'undefined' && grindSetting !== null) {
             const settingFloat = parseFloat(grindSetting);
-            grindSizeEl.textContent = !isNaN(settingFloat) ? `Grind ${settingFloat}` : `Grind N/A`;
+            grindSizeEl.textContent = !isNaN(settingFloat) ? `Grind ${formatGrind(settingFloat)}` : `Grind N/A`;
         } else {
             grindSizeEl.textContent = `Grind N/A`;
         }

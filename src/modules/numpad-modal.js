@@ -263,7 +263,7 @@ function handleNumberClick(num) {
         currentValue = num;
     } else if (currentValue === '-0') {
         currentValue = '-' + num;
-    } else if (currentValue.replace('-', '').length < 5) {
+    } else if (currentValue.replace('-', '').length < (currentConfig?.maxLength ?? 5)) {
         currentValue = currentValue + num;
     }
     updateDisplay();
@@ -283,7 +283,7 @@ function handleDecimalClick() {
         currentValue = '0.';
         isFirstInput = false;
         updateDisplay();
-    } else if (!currentValue.includes('.') && currentValue.length < 5) {
+    } else if (!currentValue.includes('.') && currentValue.length < (currentConfig?.maxLength ?? 5)) {
         currentValue = currentValue + '.';
         updateDisplay();
     }
@@ -359,7 +359,8 @@ const fieldConfig = {
     'dose-in': { title: 'DOSE', unit: 'g', defaultValue: '20', label: 'Input value between 1–120' },
     'drink-out': { title: 'DRINK OUT', unit: 'g', defaultValue: '40', label: 'Input value between 1–200' },
     'temperature': { title: 'TEMPERATURE', unit: '°c', defaultValue: '93', label: 'Input value between 70–110' },
-    'grind': { title: 'GRIND', unit: '', defaultValue: '1', label: 'Input value between 0–9999' },
+    // Three decimals after a multi-digit integer part need more than the usual 5 characters.
+    'grind': { title: 'GRIND', unit: '', defaultValue: '1', label: 'Input value between 0–9999', maxLength: 8 },
     'steam-duration': { title: 'STEAM DURATION', unit: 's', defaultValue: '30', label: 'Input value 0–120 (0 = steam timer off)' },
     'steam-flow': { title: 'STEAM FLOW', unit: 'ml/s', defaultValue: '1.0', label: 'Input value between 0.1–10.0' },
     'flush': { title: 'FLUSH', unit: 's', defaultValue: '5', label: 'Input value 0–60 (0 = no flush)' },

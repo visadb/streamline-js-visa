@@ -24,6 +24,7 @@ import { classifyStopReason, canonicalStopReason, STOP_TARGET_WEIGHT, STOP_TARGE
 import { resolveMilkProbePresence, MILK_PROBE_ABSENT_AFTER_MS, selectMilkProbeSensorId } from './steam-mode.js';
 import { readTimeToReadyFrame, heatingSecondsLeft } from './heating-countdown.js';
 import { workflowTileValues, tilesToPaint, profileChanged, WORKFLOW_EDIT_GUARD_MS } from './workflow-watch.js';
+import { formatGrind } from './grind-policy.js';
 import { isCupWarmerOn, readCupWarmerTarget, resolvePrewarm, getCupWarmerState, setCupWarmerState, patchCupWarmerState, invalidateCupWarmerState, onCupWarmerStateChange, CUP_WARMER_TARGET_KEY } from './cup-warmer.js';
 import { openDB, getSetting, setSetting } from './idb.js';
 import { openContextMenu } from './context-menu.js';
@@ -120,7 +121,7 @@ function initMobileValueInputs({ openModal, shouldUseNumpad }) {
                         const tempC = fromDisplayTemp(parseFloat(newVal));
                         el.textContent = field === 'milk-stop' ? formatTemp(tempC, 0) :
                                         type === 'temperature' ? formatTemp(tempC, 0) :
-                                        type === 'grind' ? newVal :
+                                        type === 'grind' ? formatGrind(newVal) :
                                         type === 'steam-duration' ? window.app.ui.formatSteamDuration((newVal === '' || isNaN(parseFloat(newVal))) ? 0 : parseFloat(newVal)) :
                                         type === 'steam-flow' ? newVal :
                                         type === 'flush' ? `${newVal}s` :

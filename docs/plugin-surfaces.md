@@ -459,15 +459,15 @@ An invalid action drops the action only; the surface still shows, inert.
   tile's current value by `by` (a non-zero number, at most 100 either way) and goes through the same setter as
   `set`, so the result is clamped to the same range and the profile remembers it. `field` is `targetDoseWeight`,
   `targetYield` or `grinderSetting`; brew temperature is not steppable. Nothing happens until the tile shows a
-  number. It steps the value the tile shows (grind shows one decimal, so steps finer than 0.1 round with it),
+  number. It steps the value the tile shows (grind shows three decimals, but `set` and `step` round to hundredths),
   and a plugin `tile-mode` on the same tile owns that tile's value, so do not step it. Not allowed on a `tile-mode`
   or a header button. Use it for a pill such as "+0.5 g" when your plugin does not need to know the current value.
   Once the value is stored the skin reads `skin` again, so the plugin's pills reflect the new number (no
   `workflow-refresh` is sent).
 - **`stepsize`**: `{ "type": "stepsize", "field": "targetDoseWeight", "sizes": [1, 0.5, 0.1] }` on `tile-hint` and
   `tile-line` only. `field` is `targetDoseWeight`, `targetYield` or `grinderSetting` (brew
-  temperature is not steppable). On grind a whole-number size shows whole numbers and any other size shows one
-  decimal; without a grind `stepsize` the tile keeps its own rule (1 for a whole number, 0.1 otherwise). `sizes` has 1 to 4 numbers, each greater than 0 and at most 10, rounded to
+  temperature is not steppable). Grind always shows three decimals; without a grind `stepsize` the tile steps by
+  0.025. `sizes` has 1 to 4 numbers, each greater than 0 and at most 10, rounded to
   hundredths; anything else drops the action. The pill changes what the tile's own `-` / `+` move by: each tap
   moves to the next size and wraps. The skin draws the pill text itself (`±0.5 g`, no `g` on grind, from the size stored on this
   device; your `text` is ignored), and the choice is kept per field in this device's local storage, not synced.
