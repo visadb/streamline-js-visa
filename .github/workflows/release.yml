@@ -38,10 +38,10 @@ jobs:
             fi
           done
 
-      # On tag builds, rewrite the manifest version from the git tag so the
-      # tag is the single source of truth. Maintainer only has to `git tag vX.Y.Z`
-      # and the release zip's skin-manifest.json is auto-synced. On main pushes
-      # (dist branch deploys) the manifest stays as committed.
+      # On tag builds, rewrite the manifest version and the bundle's APP_VERSION
+      # from the git tag so the tag is the single source of truth. Maintainer only
+      # has to `git tag vX.Y.Z-visa.NNN`; the running bundle then reports the same
+      # version Decaid reports from disk, which the reload prompt compares.
       - name: Sync skin-manifest.json version from tag
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
@@ -49,8 +49,10 @@ jobs:
           version="${GITHUB_REF_NAME#v}"
           jq --arg v "$version" '.version = $v' dist/skin-manifest.json > dist/skin-manifest.json.tmp
           mv dist/skin-manifest.json.tmp dist/skin-manifest.json
-          echo "Synced manifest version to: $version"
+          sed -i "s/^export const APP_VERSION = '.*';/export const APP_VERSION = '${version}';/" dist/src/version.js
+          echo "Synced manifest version and APP_VERSION to: $version"
           cat dist/skin-manifest.json
+          grep -n "APP_VERSION" dist/src/version.js
 
 
       # On main pushes (dist branch deploys): suffix the id so the dist build

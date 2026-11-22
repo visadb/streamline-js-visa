@@ -18,21 +18,30 @@ never accumulates history.
 
 ## Tagged releases
 
-Push a tag matching `v*` to cut a release:
+Push a tag matching `v*` to cut a release. Fork releases use the upstream
+version they are based on plus a dotted, three-digit `-visa.NNN` counter that
+restarts at `000` on each new upstream version:
 
 ```bash
-git tag v0.1.0
-git push origin v0.1.0
+git tag v0.2.31-visa.004
+git push visadb v0.2.31-visa.004
 ```
+
+Keep the dot: the skin's reload prompt ignores everything from a second `-`
+on, so `-visa-009` and `-visa-010` would compare equal and never prompt, while
+`-visa.009` < `-visa.010` compares numerically. Keep the width too: the
+comparison ignores the zero padding, so `-visa.4` and `-visa.004` are the same
+version.
 
 The action:
 
 1. Stages the whitelist into `./dist/`
-2. **Rewrites** `dist/skin-manifest.json` to set `version` to the tag name
-   (with the leading `v` stripped — tag `v0.1.0` → version `0.1.0`). This
-   means the git tag is the single source of truth for version and you do
-   not have to bump `skin-manifest.json` manually before tagging.
-3. Zips the staged whitelist as `streamline.js-visa-v0.1.0.zip`
+2. **Rewrites** `dist/skin-manifest.json` `version` and `dist/src/version.js`
+   `APP_VERSION` to the tag name with the leading `v` stripped (tag
+   `v0.2.31-visa.004` → version `0.2.31-visa.004`). The git tag is the single
+   source of truth for version; you do not have to bump either file before
+   tagging.
+3. Zips the staged whitelist as `streamline.js-visa-v0.2.31-visa.004.zip`
 4. Publishes a GitHub Release with auto-generated notes
 
 Downstream tools consume the release via:
@@ -41,8 +50,9 @@ Downstream tools consume the release via:
 github_release: <owner>/streamline-js
 ```
 
-Note: the committed `skin-manifest.json` version is only rewritten inside
-the release artifact — the file on disk in `main` is untouched. The `dist`
+Note: the committed `skin-manifest.json` and `src/version.js` versions are
+only rewritten inside the release artifact — the files on disk in `main` are
+untouched. The `dist`
 branch snapshot (for bleeding-edge dev) keeps the version as committed,
 because tag-based auto-sync only runs on tag builds.
 

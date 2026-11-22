@@ -33,6 +33,10 @@ test('compareVersions orders releases, prereleases and v-prefixes', () => {
     assert.equal(compareVersions('0.3.0', '0.2.99'), 1);
     assert.equal(compareVersions('1.0.0-beta.1', '1.0.0'), -1);
     assert.equal(compareVersions('0.2.9', '0.2.10'), -1);
+    assert.equal(compareVersions('0.2.31-visa.009', '0.2.31-visa.010'), -1);
+    assert.equal(compareVersions('0.2.31-visa.099', '0.2.31-visa.100'), -1);
+    assert.equal(compareVersions('0.2.31-visa.004', '0.2.31'), -1);
+    assert.equal(compareVersions('0.2.31-visa.004', '0.2.32-visa.000'), -1);
 });
 
 // ── what an update run changed ──────────────────────────────────────────────

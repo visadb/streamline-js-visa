@@ -23,10 +23,10 @@ The force update is intentional for this generated branch; it is not permission 
 The workflow:
 
 1. stages the release whitelist;
-2. derives the staged manifest version from the tag by removing the leading `v`;
+2. derives the staged manifest version and `APP_VERSION` from the tag by removing the leading `v`;
 3. validates the manifest ID and version field;
 4. rejects filenames containing Win32-reserved characters;
-5. creates `streamline.js-<tag>.zip`;
+5. creates `streamline.js-visa-<tag>.zip`;
 6. publishes a GitHub Release with generated notes.
 
 The release whitelist is:
@@ -70,7 +70,7 @@ Review together:
 - `package.json` and `package-lock.json`: package metadata.
 - the intended `v*` tag.
 
-The tag is the release artifact's manifest-version source, but it does not update the runtime `APP_VERSION` in source. Deliberately synchronize version-bearing files according to the release plan and run `test/version.test.mjs`.
+The tag is the release artifact's manifest-version and `APP_VERSION` source; the committed files are not rewritten. Fork tags are `v<upstream version>-visa.<NNN>`, a three-digit counter restarting at `000` on each upstream version: `compareVersions` (`src/modules/skin-version.js`) ignores everything from a second `-` on, so a `-visa-<NNN>` tag would compare equal to every other one and the reload prompt would never fire. It reads the counter numerically, so padding does not change the order, but `-visa.4` and `-visa.004` compare equal.
 
 Do not assume the existing test enforces equality between every version field; inspect it.
 
